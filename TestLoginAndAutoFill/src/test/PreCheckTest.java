@@ -35,7 +35,7 @@ public class PreCheckTest {
 		// H.248
 		driver.switchTo().parentFrame();
 		driver.switchTo().frame("Frame_Content");
-		checkBox("protocol_slt","H.248");
+		checkBoxByAlert("语音协议","protocol_slt","H.248");
 		// 传真模块
 		// T.30
 		driver.switchTo().parentFrame();
@@ -43,9 +43,9 @@ public class PreCheckTest {
 		driver.findElement(By.linkText("传真")).click();
 		driver.switchTo().parentFrame();
 		driver.switchTo().frame("Frame_Content");
-		checkBox("fax_type","T.30");
+		checkBoxByAlert("传真协议","fax_type","T.30");
 		// T.30全控
-		checkBox("fax_proto_mode","T.30全控");
+		checkBoxByAlert("传真模式","fax_proto_mode","T.30全控");
 		// H.248模块
 		//
 		driver.switchTo().parentFrame();
@@ -54,13 +54,9 @@ public class PreCheckTest {
 		driver.switchTo().parentFrame();
 		driver.switchTo().frame("Frame_Content");
 		driver.findElement(By.linkText("高级设置")).click();
-		checkBox("codectype","G.711 PCMA");
-		try {
-			assertEquals(true, driver.findElement(By.id("vad_disable")).isSelected());
-			assertEquals(true, driver.findElement(By.id("ecan_enable")).isSelected());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
+		checkBoxByAlert("编解码优选","codectype","G.711 PCMA");
+		checkRadio("回声消除","ecan_enable");
+		checkRadio("静音抑制","vad_disable");
 	}
 
 	@After
@@ -104,26 +100,48 @@ public class PreCheckTest {
 			acceptNextAlert = true;
 		}
 	}
-	
-	private boolean checkBox(String id,String expect) {
+	//下拉列表检查
+	private boolean checkBoxByAlert(String name, String id, String expect) {
 		/*
 		 * @author wangzhuang
 		 * checkbox id
 		 * expect 
 		 */
+		System.out.println(name + "已检查");
 		try {
 			String js = "var " + id +" = document.getElementById(\"" + id + "\");"
 					+ "alert(" + id + ".options[" + id + ".selectedIndex].innerText);";
 			((JavascriptExecutor) driver).executeScript(js);
 			if (isAlertPresent()) {
 				assertEquals(expect, closeAlertAndGetItsText());
-				System.out.println(expect + " is correct!");
 			}
 			return true;
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
-			System.out.println(expect + " is not correct!");
 			return false;
 		}
 	}
+	//单选按钮检查
+	private boolean checkRadio(String name, String id) {
+		System.out.println(name + "已检查");
+		try {
+			assertEquals(true, driver.findElement(By.id(id)).isSelected());
+			return true;
+		} catch (Error e) {
+			verificationErrors.append(e.toString());
+			return false;
+		}
+	}
+	//值检查
+	private boolean checkValue(String name, String id, String value) {
+		System.out.println(name + "已检查");
+		try {
+			assertEquals(value, driver.findElement(By.id(id)).getText());
+			return true;
+		}catch (Error e) {
+			verificationErrors.append(e.toString());
+			return false;
+		}
+	}
+	
 }
