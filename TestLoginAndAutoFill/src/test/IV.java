@@ -174,6 +174,7 @@ public class IV {
 		/*
 		 * @author by wangzhaung
 		 */
+		try {
 		if (isContentAppeared(driver, "//tr["+ index +"]/td[18]/div/span/a/img")) {
 			driver.findElement(By.xpath("//tr["+ index +"]/td[18]/div/span/a/img")).click();
 		} else {
@@ -195,5 +196,9 @@ public class IV {
 		driver.switchTo().alert();
 		assertEquals("修改成功！请保存配置！", closeAlertAndGetItsText());
 		return true;
+		} catch (Error e) {
+			verificationErrors.append(e.toString());
+			return false;
+		}
 	}
 }
